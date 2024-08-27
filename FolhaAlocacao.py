@@ -2,6 +2,7 @@ import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, Alignment
 from openpyxl.worksheet.page import PageMargins
+import os
 
 # Carregar o Excel especificando que o cabeçalho está na segunda linha (índice 1)
 Base = pd.read_excel("Romaneio de Descarga carga 202191.xlsx", header=2)
@@ -9,12 +10,11 @@ Base = Base.dropna(subset=['CNPJ'])
 Base['Cod. Produto'] = Base['Cod. Produto'].astype(int)
 ordem = Base['Ordem'].iloc[0]
 ordem = int(ordem)
-print(ordem)
 
 # Agrupar pelo 'Cod. Produto' e somar a coluna 'Qtde', mantendo a primeira descrição encontrada
 df_agrupado = Base.groupby('Cod. Produto').agg({'Descrição': 'first', 'Qtde': 'sum'}).reset_index()
 
-# Adicionar novas colunas
+# Adicionar novas colunas ao DataFrame agrupado
 df_agrupado['END1'] = ''
 df_agrupado['END2'] = ''
 df_agrupado['END3'] = ''
@@ -41,14 +41,23 @@ total_row = pd.DataFrame({
 # Adicionar a linha de total ao DataFrame
 df_agrupado = pd.concat([df_agrupado, total_row], ignore_index=True)
 
+# Adicionar as novas colunas "ALOCAÇÃO", "ALOCAÇÃO", e "ROTA" ao DataFrame original "Base"
+Base['ALOCAÇÃO1'] = ''
+Base['ALOCAÇÃO2'] = ''
+Base['ROTA'] = ''
+
 # Exportar para um arquivo Excel
 file_path = 'CACAU SHOW 202191 RESUMIDA.xlsx'
 with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
-    df_agrupado.to_excel(writer, sheet_name='Sheet1', index=False)
+    # Salvar a planilha original com novas colunas na aba "BASE"
+    Base.to_excel(writer, sheet_name='BASE', index=False)
+    
+    # Salvar a planilha modificada na aba "ALOCAÇÃO"
+    df_agrupado.to_excel(writer, sheet_name='ALOCAÇÃO', index=False)
 
-# Carregar o arquivo Excel e a planilha
+# Carregar o arquivo Excel e a planilha "ALOCAÇÃO"
 wb = load_workbook(file_path)
-ws = wb['Sheet1']
+ws = wb['ALOCAÇÃO']
 
 # Configurar a orientação da página para paisagem
 ws.page_setup.orientation = 'landscape'
@@ -82,7 +91,6 @@ column_widths = {
     'I': 10   # Largura desejada para a coluna I
 }
 
-
 for col_letter, width in column_widths.items():
     ws.column_dimensions[col_letter].width = width
 
@@ -99,15 +107,10 @@ row_height = 26  # Defina a altura desejada para as linhas
 for row in ws.iter_rows():
     ws.row_dimensions[row[0].row].height = row_height
 
-# Centralizar o texto na coluna 'Cod. Produto'
-for cell in ws['A']:  # Supondo que 'Cod. Produto' esteja na coluna A
-    cell.alignment = Alignment(horizontal='center')
-for cell in ws['B']:  # Supondo que 'Cod. Produto' esteja na coluna A
-    cell.alignment = Alignment(horizontal='center')
-for cell in ws['C']:  # Supondo que 'Cod. Produto' esteja na coluna A
-    cell.alignment = Alignment(horizontal='center')
-
-
+# Centralizar o texto nas colunas A, B e C
+for col in ['A', 'B', 'C']:
+    for cell in ws[col]:
+        cell.alignment = Alignment(horizontal='center')
 
 # Centralizar o texto na célula "Total"
 total_cell = ws[f'A{len(df_agrupado)}']
@@ -132,4 +135,14 @@ ws[f'G{linha_nova}'] = nova_informacao3
 # Salvar as alterações
 wb.save(file_path)
 
-print("Arquivo Excel criado com a soma da quantidade na última linha, largura ajustada das colunas, bordas adicionadas e altura das linhas ajustada.")
+caminho = os.getcwd() 
+caminho = os.path.dirname(caminho)
+caminho = caminho + r'\Robo_Folha_Compra'
+
+# Defina o caminho para salvar a cópia
+copy_path = caminho + r'\CACAU SHOW 202191 RESUMIDA.xlsx'
+
+# Salvar a cópia do arquivo ajustado
+wb.save(copy_path)
+
+print("Arquivo Excel criado com a aba BASE contendo novas colunas e a aba ALOCAÇÃO modificada.")
