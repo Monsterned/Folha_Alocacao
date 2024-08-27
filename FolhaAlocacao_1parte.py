@@ -135,14 +135,4 @@ ws[f'G{linha_nova}'] = nova_informacao3
 # Salvar as alterações
 wb.save(file_path)
 
-# caminho = os.getcwd() 
-# caminho = os.path.dirname(caminho)
-# caminho = caminho + r'\Robo_Folha_Compra'
-
-# # Defina o caminho para salvar a cópia
-# copy_path = caminho + r'\CACAU SHOW 202191 RESUMIDA.xlsx'
-
-# # Salvar a cópia do arquivo ajustado
-# wb.save(copy_path)
-
 print("Arquivo Excel criado com a aba BASE contendo novas colunas e a aba ALOCAÇÃO modificada.")

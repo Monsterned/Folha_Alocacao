@@ -13,11 +13,6 @@ BASE = pd.read_excel('CACAU SHOW 202191 RESUMIDA.xlsx', sheet_name='BASE')
 ALOCAÇÃO = pd.read_excel('CACAU SHOW 202191 RESUMIDA.xlsx', sheet_name='ALOCAÇÃO')
 ROTAS = pd.read_excel('ROTAS TERMINAL CACAU.xlsx', sheet_name='Plan1', usecols="A:B")
 
-# # Verificar as colunas disponíveis
-# print("Colunas em BASE:", BASE.columns)
-# print("Colunas em ALOCAÇÃO:", ALOCAÇÃO.columns)
-# print("Colunas em ROTAS:", ROTAS.columns)
-
 # Realizar o merge para buscar a coluna desejada em ALOCAÇÃO
 resultado = pd.merge(BASE, ALOCAÇÃO.iloc[:, [0, 3]], how='left', left_on='Cod. Produto', right_on=ALOCAÇÃO.columns[0])
 BASE['ALOCAÇÃO1'] = resultado.iloc[:, -1]
