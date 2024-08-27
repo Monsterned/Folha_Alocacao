@@ -115,7 +115,6 @@ for idx, row in Planilha_xml.iterrows():
     if row['Cod. Produto'] == '':
         # Limpar células nas colunas 'Cte' e 'Soma de Qtde'
         ws[f'A{idx + 2}'].value = None
-        ws[f'F{idx + 2}'].value = None
         # Adicionar quebra de página após a linha onde 'Cod. Produto' está vazio
         ws.row_breaks.append(Break(id=idx + 2))  # +2 para adicionar a quebra após a linha com 'Cod. Produto' vazio
 
@@ -152,7 +151,6 @@ for cell in ws[descricao_letter]:
 
 # Definir a largura da coluna 'Descrição'
 ws.column_dimensions[descricao_letter].width = descricao_max_length + 2  # +2 para algum espaçamento extra
-
 
 # Adicionar bordas horizontais às linhas
 border_top = Side(style='thin')
