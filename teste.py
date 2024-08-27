@@ -124,7 +124,7 @@ for idx, row in Planilha_xml.iterrows():
         ws.row_breaks.append(Break(id=idx + 2))  # +2 para adicionar a quebra após a linha com 'Cod. Produto' vazio
 
 # Ajustar a largura das colunas específicas
-colunas_para_ajustar = ['Cidade', 'Cod. Produto', 'ALOCAÇÃO', 'Qtde']
+colunas_para_ajustar = ['Cidade','Cod. Produto', 'ALOCAÇÃO', 'Qtde']
 
 for coluna in colunas_para_ajustar:
     col_index = Planilha_xml.columns.get_loc(coluna) + 1  # +1 porque openpyxl é 1-based index
@@ -169,23 +169,28 @@ for row in ws.iter_rows(min_row=2, max_row=ws.max_row):  # Começa a partir da s
 # Configurar a orientação da página para paisagem
 ws.page_setup.orientation = 'landscape'
 
+
 # Ajustar a altura das linhas
 row_height = 22  # Defina a altura desejada para as linhas
 for row in ws.iter_rows():
     ws.row_dimensions[row[0].row].height = row_height
 
-# Configurar cabeçalhos e rodapés para incluir numeração de páginas
-ws.oddHeader.center.text = "Página &P de &N"
-ws.evenHeader.center.text = "Página &P de &N"
+# Salvar o arquivo Excel com as quebras de página e células limpas
+wb.save(arquivo_xlsx)
 
-# Adicionar o texto "CACAU SHOW" e a data na última linha
+# Carregar o arquivo Excel existente
+wb = openpyxl.load_workbook(arquivo_xlsx)
+ws = wb["DINAMICA"]
+
+# Determinar a última linha não vazia
 ultima_linha = ws.max_row + 1
+
+# Escrever "CACAU SHOW" na coluna A da última linha
 ws[f'A{ultima_linha}'] = f"CACAU SHOW {ordem}"
 ws[f'C{ultima_linha}'] = f"ALOCAÇÃO"
 ws[f'E{ultima_linha}'] = data_hoje
-
-# Salvar o arquivo Excel com as quebras de página, células limpas, larguras das colunas ajustadas, bordas horizontais e cabeçalhos/rodapés configurados
+# Salvar o arquivo Excel com a nova linha adicionada
 wb.save(arquivo_xlsx)
 
-print("Quebras de página adicionadas, células limpas, larguras das colunas ajustadas, bordas horizontais adicionadas e cabeçalhos/rodapés configurados com numeração de páginas!")
+print("Quebras de página adicionadas, células limpas, larguras das colunas ajustadas, e bordas horizontais adicionadas às linhas!")
 print('Terminou :)')
