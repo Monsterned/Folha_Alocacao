@@ -64,7 +64,7 @@ BASE.drop(columns=[ROTAS.columns[0]], inplace=True)
 
 # Criar a Tabela Dinâmica
 tabela_dinamica = BASE.pivot_table(
-    index=['Cte', 'Cidade', 'Descrição', 'Cod. Produto', 'ALOCAÇÃO1'],
+    index=['Cte', 'Cidade', 'ALOCAÇÃO1', 'Descrição', 'Cod. Produto'],
     values='Qtde',
     aggfunc='sum',
     fill_value=0
@@ -113,6 +113,14 @@ with pd.ExcelWriter(arquivo_xlsx, engine='openpyxl', mode='a', if_sheet_exists='
     Planilha_xml.to_excel(writer, sheet_name="DINAMICA", index=False)
 
 print("Valores vazios na coluna 'Cod. Produto' substituídos por células em branco!")
+
+
+
+
+
+
+
+
 
 # Adicionar a quebra de página e limpar células
 wb = openpyxl.load_workbook(arquivo_xlsx)
@@ -216,6 +224,7 @@ ws.page_margins = PageMargins(left=0.25, right=0.25, top=0.75, bottom=0.75)
 
 # Salvar o arquivo Excel
 wb.save(arquivo)
+
 
 
 print("Quebras de página adicionadas, células limpas, larguras das colunas ajustadas, bordas horizontais adicionadas e cabeçalhos/rodapés configurados com numeração de páginas!")
