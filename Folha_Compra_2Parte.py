@@ -73,6 +73,11 @@ tabela_dinamica = BASE.pivot_table(
 # Ajustar o tipo da coluna 'Cte' para string
 tabela_dinamica['Cte'] = tabela_dinamica['Cte'].astype(str)
 
+# Reordenar as colunas para mover 'ALOCAÇÃO1' depois de 'Cod. Produto'
+colunas = ['Cte', 'Cidade', 'Descrição', 'Cod. Produto', 'ALOCAÇÃO1'] + [col for col in tabela_dinamica.columns if col not in ['Cte', 'Cidade', 'Descrição', 'Cod. Produto', 'ALOCAÇÃO1']]
+tabela_dinamica = tabela_dinamica[colunas]
+
+
 # Adicionar totais antes de cada novo Cte
 def add_totals(df):
     result = []
