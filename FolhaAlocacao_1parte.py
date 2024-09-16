@@ -3,6 +3,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Border, Side, Alignment
 from openpyxl.worksheet.page import PageMargins
 import os
+import tkinter as tk
+from tkinter import messagebox
 
 # Carregar o Excel especificando que o cabeçalho está na segunda linha (índice 1)
 Base = pd.read_excel("Romaneio de Descarga carga 202191.xlsx", header=2)
@@ -136,3 +138,16 @@ ws[f'G{linha_nova}'] = nova_informacao3
 wb.save(file_path)
 
 print("Arquivo Excel criado com a aba BASE contendo novas colunas e a aba ALOCAÇÃO modificada.")
+
+# Função que será chamada para exibir a mensagem
+def show_success_message():
+    root = tk.Tk()
+    root.withdraw()  # Oculta a janela principal
+    messagebox.showinfo("Sucesso", "Código finalizado com sucesso!")
+    root.destroy()  # Fecha a janela após exibir a mensagem
+
+# Simulando o final do código
+if __name__ == "__main__":
+    # Aqui você pode adicionar seu código que será executado
+    # e ao final, chamará a função para exibir a mensagem
+    show_success_message()

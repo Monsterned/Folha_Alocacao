@@ -9,13 +9,27 @@ from datetime import datetime
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 from openpyxl.worksheet.page import PageMargins
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import filedialog
 
 caminho = os.getcwd() 
 data_hoje = datetime.now().strftime('%d/%m/%Y')
 
-# Carregar os DataFrames
-BASE = pd.read_excel('CACAU SHOW 202191 RESUMIDA.xlsx', sheet_name='BASE')
-ALOCAÇÃO = pd.read_excel('CACAU SHOW 202191 RESUMIDA.xlsx', sheet_name='ALOCAÇÃO')
+# Função para abrir a caixa de diálogo e selecionar um arquivo
+def selecionar_arquivo():
+    root = tk.Tk()
+    root.withdraw()  # Esconde a janela principal
+    caminho_arquivo = filedialog.askopenfilename(title="Selecione o arquivo", filetypes=[("Excel files", "*.xlsx")])
+    return caminho_arquivo
+
+# Selecionar o arquivo para BASE e ALOCAÇÃO
+print("Selecione o arquivo que contém BASE e ALOCAÇÃO")
+arquivo = selecionar_arquivo()
+
+# Carregar os DataFrames com os sheet_name padrão
+BASE = pd.read_excel(arquivo, sheet_name='BASE')
+ALOCAÇÃO = pd.read_excel(arquivo, sheet_name='ALOCAÇÃO')
 ROTAS = pd.read_excel('ROTAS TERMINAL CACAU.xlsx', sheet_name='Plan1', usecols="A:B")
 
 ordem = BASE['Ordem'].iloc[0]
@@ -77,7 +91,6 @@ tabela_dinamica['Cte'] = tabela_dinamica['Cte'].astype(str)
 colunas = ['Cte', 'Cidade', 'Descrição', 'Cod. Produto', 'ALOCAÇÃO1'] + [col for col in tabela_dinamica.columns if col not in ['Cte', 'Cidade', 'Descrição', 'Cod. Produto', 'ALOCAÇÃO1']]
 tabela_dinamica = tabela_dinamica[colunas]
 
-
 # Adicionar totais antes de cada novo Cte
 def add_totals(df):
     result = []
@@ -118,14 +131,6 @@ with pd.ExcelWriter(arquivo_xlsx, engine='openpyxl', mode='a', if_sheet_exists='
     Planilha_xml.to_excel(writer, sheet_name="DINAMICA", index=False)
 
 print("Valores vazios na coluna 'Cod. Produto' substituídos por células em branco!")
-
-
-
-
-
-
-
-
 
 # Adicionar a quebra de página e limpar células
 wb = openpyxl.load_workbook(arquivo_xlsx)
@@ -203,21 +208,20 @@ ws[f'E{ultima_linha}'] = data_hoje
 # Salvar o arquivo Excel com as quebras de página, células limpas, larguras das colunas ajustadas, bordas horizontais e cabeçalhos/rodapés configurados
 wb.save(arquivo_xlsx)
 
-
 # Carregar o arquivo Excel existente
 arquivo = 'CACAU SHOW 202191 RESUMIDA.xlsx'
 wb = load_workbook(arquivo)
 ws = wb['DINAMICA']  # Nome da aba onde está a coluna ALOCAÇÃO
 
 # Ajustar a largura da coluna ALOCAÇÃO
-ws.column_dimensions['E'].width = 37  # Ajuste a largura conforme necessário
+ws.column_dimensions['E'].width = 32  # Ajuste a largura conforme necessário
 
 # Ajustar a altura da linha e quebrar o texto na coluna ALOCAÇÃO
 for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
     for cell in row:
         if cell.column_letter == 'E':  # Substitua 'E' pela letra da coluna ALOCAÇÃO, se necessário
             cell.alignment = Alignment(wrap_text=True)  # Garantir que wrap_text seja aplicado
-            ws.row_dimensions[cell.row].height = 70  # Ajustar a altura da linha (mude conforme necessário)
+            ws.row_dimensions[cell.row].height = 26  # Ajustar a altura da linha (mude conforme necessário)
 
 # Configurar para ajustar o conteúdo à largura da página A4
 ws.page_setup.fitToWidth = 1  # Ajustar para caber na largura de uma página
@@ -230,7 +234,15 @@ ws.page_margins = PageMargins(left=0.25, right=0.25, top=0.75, bottom=0.75)
 # Salvar o arquivo Excel
 wb.save(arquivo)
 
+# Função que será chamada para exibir a mensagem
+def show_success_message():
+    root = tk.Tk()
+    root.withdraw()  # Oculta a janela principal
+    messagebox.showinfo("Sucesso", "Código finalizado com sucesso!")
+    root.destroy()  # Fecha a janela após exibir a mensagem
 
-
-print("Quebras de página adicionadas, células limpas, larguras das colunas ajustadas, bordas horizontais adicionadas e cabeçalhos/rodapés configurados com numeração de páginas!")
-print('Terminou :)')
+# Simulando o final do código
+if __name__ == "__main__":
+    # Aqui você pode adicionar seu código que será executado
+    # e ao final, chamará a função para exibir a mensagem
+    show_success_message()
